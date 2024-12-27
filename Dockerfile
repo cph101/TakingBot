@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Copy the package files into the container
 COPY Package.swift .
-COPY Package.resolved .
+#COPY Package.resolved .
 
 COPY Sources ./Sources
 
