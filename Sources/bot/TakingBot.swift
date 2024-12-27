@@ -1,6 +1,12 @@
+import Foundation
+import DiscordKitBot
+
+@main
 class TakingBot {
 
-    func main() {
+    static func main() {
         print("Missisipi")
+
+        RunLoop.main.run()
     }
 }

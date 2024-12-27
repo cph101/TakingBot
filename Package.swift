@@ -10,11 +10,14 @@ let package = Package(
         .executable(name: "TakingBot", targets: ["bot"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/SwiftcordApp/DiscordKit", branch: "main")
     ],
     targets: [
         .executableTarget(
             name: "bot",
-            dependencies: []
+            dependencies: [
+                .product(name: "DiscordKitBot", package: "discordkit")
+            ]
         )
     ],
     swiftLanguageModes: [.v5]

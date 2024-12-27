@@ -6,6 +6,4 @@ services:
       platforms:
         - linux/amd64
         - linux/arm64
-    ports:
-      - "8080:8080" # Map the app's internal port to the host
     restart: unless-stopped
