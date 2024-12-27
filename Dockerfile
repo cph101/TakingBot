@@ -1,13 +1,15 @@
 # Multi-stage build to ensure a small final image
 
 # Stage 1: Build the Swift package
-FROM swift:5.8 AS build
+FROM swift:6.0 AS build
 
 # Set the working directory
 WORKDIR /app
 
 # Copy the package files into the container
 COPY Package.swift .
+COPY Package.resolved .
+
 COPY Sources ./Sources
 
 # Build the Swift package in release mode
