@@ -4,9 +4,17 @@ import DiscordKitBot
 @main
 class TakingBot {
 
-    static func main() {
-        print("Missisipi")
+    static let client = Client()
 
+    static func main() {
+
+        client.ready.listen {
+            print("Logged in as \(client.user!.username)#\(client.user!.discriminator)!")
+        }
+
+        EventDispatcher.load()
+        
+        client.login(token: "MTMxNzA2NDY2ODg5MTcxMzU3OA.GMhapI.f2XDKwYLJsSRBTM_bpz_koa1PHKL5yvvSIaBok")
         RunLoop.main.run()
     }
 }
