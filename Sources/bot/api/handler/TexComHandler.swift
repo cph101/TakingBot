@@ -1,30 +1,24 @@
 import Foundation
 import DiscordKitBot
 
-class TexComHandler: EventHandler {
-    required init() {}
-    
-    func handle(_ data: BotMessage) async {
-        fatalError("Subclasses must implement the handle(_:) method")
-    }
+protocol TexComHandler: EventHandler {
+    func handle(_ data: BotMessage) async
+    func matchablePresentation() -> MatchablePresentation
+}
 
-    
-    func matchablePresentation() -> MatchablePresentation {
-        fatalError("Subclasses must implement the matchablePresentation method")
-    }
-
+extension TexComHandler {
     func canHandle(_ data: BotMessage) -> Bool {
-        guard let regex = matchablePresentation().buildRegex() else {
+
+        if matchablePresentation().buildRegex() == nil {
             print("Failed to build regex")
             return false
         }
 
-        let range = NSRange(data.content.startIndex..<data.content.endIndex, in: data.content)
-        return regex.firstMatch(in: data.content, options: [], range: range) != nil
+        return matchablePresentation().matchesInput(data.content) != nil
     }
 
 
-    final func listener() -> NCWrapper<BotMessage> {
+    func listener() -> NCWrapper<BotMessage> {
         return TakingBot.client.messageCreate;
     }
 }

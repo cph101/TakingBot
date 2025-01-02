@@ -1,5 +1,5 @@
 {
-  "originHash" : "09504544567ae2d4442c7ad5fb80e5885eb473ff1e957bb7d5aa93bc503c2567",
+  "originHash" : "1c65550c0f29cacb47dd5688a0d0f25e773eb2182de010c23b7913e4f3bcb3af",
   "pins" : [
     {
       "identity" : "bitbytedata",
@@ -13,10 +13,10 @@
     {
       "identity" : "discordkit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/SwiftcordApp/DiscordKit",
+      "location" : "https://github.com/cph101/DiscordKit",
       "state" : {
         "branch" : "main",
-        "revision" : "2da56feba250dac2638b58ee5c6b362fa46002d1"
+        "revision" : "b4a06cb08e54c2adefc0e3872381543ec8dbff01"
       }
     },
     {

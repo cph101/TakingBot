@@ -4,7 +4,7 @@ import DiscordKitBot
 @main
 class TakingBot {
 
-    static let client = Client()
+    static let client = Client(intents: .all)
 
     static func main() {
 
@@ -14,7 +14,7 @@ class TakingBot {
 
         EventDispatcher.load()
         
-        client.login(token: "MTMxNzA2NDY2ODg5MTcxMzU3OA.GMhapI.f2XDKwYLJsSRBTM_bpz_koa1PHKL5yvvSIaBok")
+        client.login(token: "MTMxNzA2NDY2ODg5MTcxMzU3OA.G1mCF_.imC845FZuVYKmJhuZKQFzCtVfcZgytRJOsC_A8")
         RunLoop.main.run()
     }
 }

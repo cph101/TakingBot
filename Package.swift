@@ -10,13 +10,16 @@ let package = Package(
         .executable(name: "TakingBot", targets: ["bot"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/SwiftcordApp/DiscordKit", branch: "main")
+        .package(url: "https://github.com/cph101/DiscordKit", branch: "main")
     ],
     targets: [
         .executableTarget(
             name: "bot",
             dependencies: [
                 .product(name: "DiscordKitBot", package: "discordkit")
+            ],
+            resources: [
+                .process("resources/Clans.plist")
             ]
         )
     ],

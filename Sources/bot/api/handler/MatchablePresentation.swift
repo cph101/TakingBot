@@ -1,74 +1,74 @@
 import Foundation
 
-enum Args: String {
-    case string = "[^\\s]+?"
-    case number = "-?(\\d+(\\.\\d*)?|\\.\\d+)"
-    case boolean = "true|false"
-    case time = "\\b(\\d+)\\s*(d|m|y|h|s|day|month|year|hour|second)s?\\b|\\binf\\b"
-    case user = "<@!?(\\d{17,20})>|\\d{17,20}"
-    case code = "`([^`]+)`|```([\\s\\S]+?)```"
+struct Args {
+    let pattern: String
+
+    static let string = Args(pattern: "[^\\s]+?")
+    static let number = Args(pattern: "-?(\\d+(\\.\\d*)?|\\.\\d+)")
+    static let boolean = Args(pattern: "true|false")
+    static let time = Args(pattern: "\\b(\\d+)\\s*(d|m|y|h|s|day|month|year|hour|second)s?\\b|\\binf\\b")
+    static let user = Args(pattern: "<@!?(\\d{17,20})>|\\d{17,20}")
+    static let code = Args(pattern: "`([^`]+)`|```([\\s\\S]+?)```")
+
 }
+
 
 class MatchablePresentation {
     public let args: [Args]
+    public let flags: [[String]]
     public let names: [String]
     public let prefix: String
 
-    init(_ args: [Args], _ names: [String], _ prefix: String) {
+    init(args: [Args], flags: [[String]], names: [String], prefix: String) {
         self.args = args
+        self.flags = flags
         self.names = names
         self.prefix = prefix
     }
 
-    /// Extracts an argument value based on its type and position.
-    func extractArg(matched: NSTextCheckingResult, index: Int, from input: String) -> Any? {
+    // Extract positional arguments
+    func extractArg(matched: NSTextCheckingResult, index: Int, from input: String) -> String? {
         guard index < args.count else { return nil }
-        let type = args[index]
         let rangeIndex = index + 2
         guard matched.numberOfRanges > rangeIndex,
               let range = Range(matched.range(at: rangeIndex), in: input) else { return nil }
-        let value = String(input[range])
-
-        switch type {
-        case .number:
-            return Double(value)
-        case .boolean:
-            return value == "true"
-        case .time:
-            return value == "inf" ? "indefinite" : value
-        case .user:
-            return value.replacingOccurrences(of: "[<@!>]", with: "", options: .regularExpression)
-        case .code:
-            return value.replacingOccurrences(of: "`{1,3}", with: "", options: .regularExpression)
-        case .string:
-            return value
-        }
+        return String(input[range])
     }
 
-    /// Retrieves the alias (command name) used in the input.
-    func usedAlias(matched: NSTextCheckingResult, from input: String) -> String? {
-        guard matched.numberOfRanges > 1 else { return nil }
-        let range = matched.range(at: 1)
-        return Range(range, in: input).map { String(input[$0]) }
+    // Extract flags based on alias
+    func extractFlag(matched: NSTextCheckingResult, flagAlias: String, from input: String) -> Bool {
+        let regex = try? NSRegularExpression(pattern: "\\b\(NSRegularExpression.escapedPattern(for: flagAlias))\\b", options: .caseInsensitive)
+        let range = NSRange(input.startIndex..<input.endIndex, in: input)
+        return regex?.firstMatch(in: input, options: [], range: range) != nil
     }
 
-    /// Escapes a string for safe use in regex patterns.
-    private func escapeRegExpString(_ str: String) -> String {
-        NSRegularExpression.escapedPattern(for: str)
-    }
-
-    /// Builds the regular expression for matching the command and arguments.
+    // Build regex for matching command, args, and flags
     func buildRegex() -> NSRegularExpression? {
-        let escapedPrefix = escapeRegExpString(prefix)
-        let argPatterns = args.map { "(\($0.rawValue))?" }.joined(separator: " ")
-        let pattern = "^\(escapedPrefix)(\(names.joined(separator: "|")))(?: \(argPatterns))?$"
-        return try? NSRegularExpression(pattern: pattern, options: []);
+        let escapedPrefix = NSRegularExpression.escapedPattern(for: prefix)
+        let commandNames = names.joined(separator: "|") // Match any of the command names (aliases)
+        let argPatterns = args.map { "(\($0.pattern))?" }.joined(separator: " ") // Optional positional args
+        
+        // Correct flag patterns
+        let flagPatterns = flags.map { "(?:" + $0.map { "\\b\($0)\\b" }.joined(separator: "|") + ")" }.joined(separator: "|")
+
+        // Combine the regex: prefix + command name + optional args + optional flags
+        let fullPattern = "^\(escapedPrefix)(\(commandNames))(?: \(argPatterns))?(?: \(flagPatterns))?$"
+        //print("Regex Pattern: \(fullPattern)")
+        return try? NSRegularExpression(pattern: fullPattern)
     }
 
-    // MARK: - Builder Class
+
+    // Match input against the built regex
+    func matchesInput(_ input: String) -> NSTextCheckingResult? {
+        guard let regex = buildRegex() else { return nil }
+        let range = NSRange(input.startIndex..<input.endIndex, in: input)
+        return regex.firstMatch(in: input, options: [], range: range)
+    }
+
     class Builder {
-        private var args: [Args] = []
-        private var names: [String] = []
+        private var args: [Args] = []  // Positional arguments
+        private var flags: [[String]] = [] // Flags and their aliases
+        private var names: [String] = [] // Command names and aliases
 
         init(_ name: String) {
             names.append(name)
@@ -79,13 +79,22 @@ class MatchablePresentation {
             return self
         }
 
+        func addFlag(_ aliases: [String]) -> Self {
+            guard !aliases.isEmpty else {
+                fatalError("Flag aliases cannot be empty.")
+            }
+            flags.append(aliases)
+            return self
+        }
+
         func addAlias(_ name: String) -> Self {
             names.append(name)
             return self
         }
 
         func build(prefix: String = ",") -> MatchablePresentation {
-            return MatchablePresentation(args, names, prefix)
+            return MatchablePresentation(args: args, flags: flags, names: names, prefix: prefix)
         }
     }
+
 }

@@ -6,7 +6,8 @@
 `docker-compose up --build`
 
 ### Manual (requires Swift install)
-`swift build -c release --static-swift-stdlib; $(swift build -c release --show-bin-path)/TakingBot`
+`export TARGET=release` (Set to `debug` if debugging) 
+`swift build -c $TARGET --static-swift-stdlib; $(swift build -c $TARGET --show-bin-path)/TakingBot`
 
 <details>
 <summary>Installing Swift</summary>
