@@ -10,3 +10,5 @@ services:
     environment:
       - DISCORD_TOKEN=${DISCORD_TOKEN}
       - USR_TOKEN=${USR_TOKEN}
+    ports:
+      - '8080:8080'
