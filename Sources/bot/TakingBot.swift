@@ -4,7 +4,7 @@ import DiscordKitBot
 @main
 class TakingBot {
 
-    static let client = Client(intents: .all)
+    static let client = Client(intents: .guilds)
 
     static func main() {
 
