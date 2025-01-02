@@ -2,10 +2,10 @@ import Foundation
 
 class Clans {
 
-    static var clans: [ClanInfo] = []
+    static var clans: [Clan] = []
     static var lastUpdated = NSDate().timeIntervalSince1970
     
-    static func allClans() -> [ClanInfo] {
+    static func allClans() -> [Clan] {
         let cacheTime = NSDate().timeIntervalSince1970 - lastUpdated
         if clans.count > 0 && cacheTime < 3600 {
             return clans
@@ -18,7 +18,7 @@ class Clans {
         }
         
         let decoder = PropertyListDecoder()
-        let clansFresh = (try? decoder.decode([ClanInfo].self, from: data)) ?? []
+        let clansFresh = (try? decoder.decode([Clan].self, from: data)) ?? []
         clans = clansFresh; return clans
     }
 }

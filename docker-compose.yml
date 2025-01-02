@@ -7,3 +7,6 @@ services:
         - linux/amd64
         - linux/arm64
     restart: unless-stopped
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - USR_TOKEN=${USR_TOKEN}

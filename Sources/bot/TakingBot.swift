@@ -14,7 +14,7 @@ class TakingBot {
 
         EventDispatcher.load()
         
-        client.login(token: "MTMxNzA2NDY2ODg5MTcxMzU3OA.G1mCF_.imC845FZuVYKmJhuZKQFzCtVfcZgytRJOsC_A8")
+        client.login()
         RunLoop.main.run()
     }
 }
